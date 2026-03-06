@@ -1,0 +1,27 @@
+HKLM
+{
+    NoRemove SOFTWARE
+    {
+        NoRemove Microsoft
+        {
+            NoRemove EdgeUpdate
+            {
+                NoRemove Clients
+                {
+                    '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
+                    {
+                        val pv = s '131.0.2903.86'
+                        val name = s 'Microsoft Edge WebView2 Runtime'
+                    }
+                }
+                NoRemove ClientState
+                {
+                    '{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}'
+                    {
+                        val pv = s '131.0.2903.86'
+                    }
+                }
+            }
+        }
+    }
+}

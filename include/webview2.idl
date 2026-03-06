@@ -1,0 +1,186 @@
+/*
+ * Copyright 2024 Wine project
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+cpp_quote("#ifndef __webview2_h__")
+cpp_quote("#define __webview2_h__")
+
+interface ICoreWebView2;
+interface ICoreWebView2Controller;
+interface ICoreWebView2Environment;
+interface ICoreWebView2Settings;
+interface ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
+interface ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+interface ICoreWebView2EnvironmentOptions;
+
+/*****************************************************************************
+ * ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler interface
+ */
+[
+    object,
+    uuid(4e8a3389-c9d8-4bd2-b6b5-124fee6cc14d),
+    pointer_default(unique),
+    local
+]
+interface ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler : IUnknown
+{
+    HRESULT Invoke(
+        [in] HRESULT errorCode,
+        [in] ICoreWebView2Environment *createdEnvironment);
+}
+
+/*****************************************************************************
+ * ICoreWebView2CreateCoreWebView2ControllerCompletedHandler interface
+ */
+[
+    object,
+    uuid(6c4819f3-c9b7-4260-8127-c9f5bde7f68c),
+    pointer_default(unique),
+    local
+]
+interface ICoreWebView2CreateCoreWebView2ControllerCompletedHandler : IUnknown
+{
+    HRESULT Invoke(
+        [in] HRESULT errorCode,
+        [in] ICoreWebView2Controller *createdController);
+}
+
+/*****************************************************************************
+ * ICoreWebView2Settings interface
+ */
+[
+    object,
+    uuid(e562e4f0-d7fa-43ac-8d71-c05150499f00),
+    pointer_default(unique),
+    local
+]
+interface ICoreWebView2Settings : IUnknown
+{
+    HRESULT get_IsScriptEnabled(
+        [out, retval] BOOL *isScriptEnabled);
+    HRESULT put_IsScriptEnabled(
+        [in] BOOL isScriptEnabled);
+    HRESULT get_AreDefaultScriptDialogsEnabled(
+        [out, retval] BOOL *areDefaultScriptDialogsEnabled);
+    HRESULT put_AreDefaultScriptDialogsEnabled(
+        [in] BOOL areDefaultScriptDialogsEnabled);
+    HRESULT get_IsWebMessageEnabled(
+        [out, retval] BOOL *isWebMessageEnabled);
+    HRESULT put_IsWebMessageEnabled(
+        [in] BOOL isWebMessageEnabled);
+    HRESULT get_AreDefaultContextMenusEnabled(
+        [out, retval] BOOL *enabled);
+    HRESULT put_AreDefaultContextMenusEnabled(
+        [in] BOOL enabled);
+    HRESULT get_AreDevToolsEnabled(
+        [out, retval] BOOL *areDevToolsEnabled);
+    HRESULT put_AreDevToolsEnabled(
+        [in] BOOL areDevToolsEnabled);
+    HRESULT get_IsStatusBarEnabled(
+        [out, retval] BOOL *isStatusBarEnabled);
+    HRESULT put_IsStatusBarEnabled(
+        [in] BOOL isStatusBarEnabled);
+}
+
+/*****************************************************************************
+ * ICoreWebView2 interface
+ */
+[
+    object,
+    uuid(76eceacb-0462-4d94-ac83-423a6793775e),
+    pointer_default(unique),
+    local
+]
+interface ICoreWebView2 : IUnknown
+{
+    HRESULT get_Settings(
+        [out, retval] ICoreWebView2Settings **settings);
+    HRESULT Navigate(
+        [in] LPCWSTR uri);
+    HRESULT NavigateToString(
+        [in] LPCWSTR htmlContent);
+}
+
+/*****************************************************************************
+ * ICoreWebView2Controller interface
+ */
+[
+    object,
+    uuid(4d00c0d1-9434-4eb6-8078-8697a560334f),
+    pointer_default(unique),
+    local
+]
+interface ICoreWebView2Controller : IUnknown
+{
+    HRESULT get_CoreWebView2(
+        [out, retval] ICoreWebView2 **coreWebView2);
+    HRESULT put_Bounds(
+        [in] RECT bounds);
+    HRESULT get_Bounds(
+        [out, retval] RECT *bounds);
+    HRESULT put_IsVisible(
+        [in] BOOL isVisible);
+    HRESULT Close();
+}
+
+/*****************************************************************************
+ * ICoreWebView2Environment interface
+ */
+[
+    object,
+    uuid(b96d755e-0319-4e92-a296-23436f46a1fc),
+    pointer_default(unique),
+    local
+]
+interface ICoreWebView2Environment : IUnknown
+{
+    HRESULT CreateCoreWebView2Controller(
+        [in] HWND parentWindow,
+        [in] ICoreWebView2CreateCoreWebView2ControllerCompletedHandler *handler);
+    HRESULT get_BrowserVersionString(
+        [out, retval] LPWSTR *versionInfo);
+}
+
+/*****************************************************************************
+ * ICoreWebView2EnvironmentOptions interface
+ */
+[
+    object,
+    uuid(2fde08a8-1e9a-4766-8c05-95a9ceb9d1c5),
+    pointer_default(unique),
+    local
+]
+interface ICoreWebView2EnvironmentOptions : IUnknown
+{
+    HRESULT get_AdditionalBrowserArguments(
+        [out, retval] LPWSTR *value);
+    HRESULT put_AdditionalBrowserArguments(
+        [in] LPCWSTR value);
+    HRESULT get_Language(
+        [out, retval] LPWSTR *value);
+    HRESULT put_Language(
+        [in] LPCWSTR value);
+    HRESULT get_TargetCompatibleBrowserVersion(
+        [out, retval] LPWSTR *value);
+    HRESULT put_TargetCompatibleBrowserVersion(
+        [in] LPCWSTR value);
+}
+
+cpp_quote("#endif /* __webview2_h__ */")

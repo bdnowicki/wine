@@ -1,0 +1,8 @@
+MODULE    = embeddedbrowserwebview.dll
+IMPORTS   = ole32 oleaut32 advapi32
+
+EXTRADLLFLAGS = -Wb,--prefer-native
+
+SOURCES = \
+	main.c \
+	embeddedbrowserwebview.rc

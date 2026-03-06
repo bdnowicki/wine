@@ -784,6 +784,7 @@ HKLM,SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86,"Version",2,"14.42.344
 11,,msxml4.dll
 11,,msxml6.dll
 11,,shdocvw.dll
+16426,Microsoft\EdgeWebView\Application\131.0.2903.86\EBWebView\x86,embeddedbrowserwebview.dll
 16422,Internet Explorer,iexplore.exe
 16422,Windows Media Player,wmplayer.exe
 16422,Windows NT\Accessories,wordpad.exe
@@ -852,6 +853,7 @@ HKLM,SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86,"Version",2,"14.42.344
 ; empty folders to make sure the parent dirs are not removed
 16410,Microsoft,
 16412,Microsoft,
+16422,Microsoft\EdgeWebView\Application\131.0.2903.86\EBWebView\x64,embeddedbrowserwebview.dll
 16422,Internet Explorer,iexplore.exe
 16422,Windows Media Player,wmplayer.exe
 16422,Windows NT\Accessories,wordpad.exe
