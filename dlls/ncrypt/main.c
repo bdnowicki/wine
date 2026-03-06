@@ -236,9 +236,25 @@ SECURITY_STATUS WINAPI NCryptCreatePersistedKey(NCRYPT_PROV_HANDLE provider, NCR
 SECURITY_STATUS WINAPI NCryptDecrypt(NCRYPT_KEY_HANDLE key, BYTE *input, DWORD insize, void *padding,
                                      BYTE *output, DWORD outsize, DWORD *result, DWORD flags)
 {
-    FIXME("(%#Ix, %p, %lu, %p, %p, %lu, %p, %#lx): stub\n", key, input, insize, padding,
+    struct object *key_object = (struct object *)key;
+    DWORD bcrypt_flags;
+
+    TRACE("(%#Ix, %p, %lu, %p, %p, %lu, %p, %#lx)\n", key, input, insize, padding,
           output, outsize, result, flags);
-    return NTE_NOT_SUPPORTED;
+
+    if (flags & ~(NCRYPT_NO_PADDING_FLAG | NCRYPT_PAD_OAEP_FLAG
+                | NCRYPT_PAD_PKCS1_FLAG | NCRYPT_SILENT_FLAG))
+    {
+        FIXME("Flags %lx not supported\n", flags);
+        return NTE_BAD_FLAGS;
+    }
+
+    if (key_object->type != KEY) return NTE_INVALID_HANDLE;
+
+    bcrypt_flags = flags & ~NCRYPT_SILENT_FLAG;
+
+    return map_ntstatus(BCryptDecrypt(key_object->key.bcrypt_key, input, insize, padding,
+                                      NULL, 0, output, outsize, result, bcrypt_flags));
 }
 
 SECURITY_STATUS WINAPI NCryptDeleteKey(NCRYPT_KEY_HANDLE key, DWORD flags)
@@ -251,6 +267,7 @@ SECURITY_STATUS WINAPI NCryptEncrypt(NCRYPT_KEY_HANDLE key, BYTE *input, DWORD i
                                      BYTE *output, DWORD outsize, DWORD *result, DWORD flags)
 {
     struct object *key_object = (struct object *)key;
+    DWORD bcrypt_flags;
 
     TRACE("(%#Ix, %p, %lu, %p, %p, %lu, %p, %#lx)\n", key, input, insize, padding,
           output, outsize, result, flags);
@@ -262,16 +279,12 @@ SECURITY_STATUS WINAPI NCryptEncrypt(NCRYPT_KEY_HANDLE key, BYTE *input, DWORD i
         return NTE_BAD_FLAGS;
     }
 
-    if (flags & NCRYPT_NO_PADDING_FLAG || flags & NCRYPT_PAD_OAEP_FLAG)
-    {
-        FIXME("No padding and oaep padding not supported\n");
-        return NTE_NOT_SUPPORTED;
-    }
-
     if (key_object->type != KEY) return NTE_INVALID_HANDLE;
 
+    bcrypt_flags = flags & ~NCRYPT_SILENT_FLAG;
+
     return map_ntstatus(BCryptEncrypt(key_object->key.bcrypt_key, input, insize, padding,
-                                      NULL, 0, output, outsize, result, flags));
+                                      NULL, 0, output, outsize, result, bcrypt_flags));
 }
 
 SECURITY_STATUS WINAPI NCryptEnumAlgorithms(NCRYPT_PROV_HANDLE provider, DWORD alg_ops,

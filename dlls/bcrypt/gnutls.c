@@ -2979,10 +2979,19 @@ static NTSTATUS key_asymmetric_encrypt( void *args )
         {
             label.data = pad->pbLabel;
             label.size = pad->cbLabel;
-            status = pubkey_set_rsa_oaep_params( key_data(params->key)->a.pubkey, dig, &label );
-            if (status == STATUS_NOT_SUPPORTED) status = STATUS_SUCCESS;
-            if (status) return status;
         }
+        else
+        {
+            label.data = NULL;
+            label.size = 0;
+        }
+        status = pubkey_set_rsa_oaep_params( key_data(params->key)->a.pubkey, dig, &label );
+        if (status == STATUS_NOT_SUPPORTED)
+        {
+            WARN( "RSA-OAEP not supported by GnuTLS, falling back to default padding\n" );
+            status = STATUS_SUCCESS;
+        }
+        if (status) return status;
     }
 
     d.data = params->input;
