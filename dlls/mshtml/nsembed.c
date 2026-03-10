@@ -30,6 +30,7 @@
 
 #include "wine/asm.h"
 #include "wine/debug.h"
+#include "wine/exception.h"
 
 #include "mshtml_private.h"
 #include "htmlevent.h"
@@ -2357,7 +2358,16 @@ void detach_gecko_browser(GeckoBrowser *This)
     SetParent(This->hwnd, NULL);
 
     nsIBaseWindow_SetVisibility(This->window, FALSE);
-    nsIBaseWindow_Destroy(This->window);
+
+    /* Wine Gecko (xul.dll) may crash with MOZ_CRASH during Destroy when the
+     * HTML document was used by a .NET application (e.g. WebView2 host).
+     * The Gecko docshell hits an assertion in its destructor chain.
+     * Catch the exception so the host application can continue running. */
+    __TRY {
+        nsIBaseWindow_Destroy(This->window);
+    } __EXCEPT_ALL {
+        WARN("Gecko crashed during nsIBaseWindow_Destroy, ignoring.\n");
+    } __ENDTRY
 
     nsIWebBrowser_SetContainerWindow(This->webbrowser, NULL);
 

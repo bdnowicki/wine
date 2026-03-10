@@ -28,6 +28,7 @@
 #include "shlguid.h"
 #include "shdeprecated.h"
 #include "mscoree.h"
+#include "wine/exception.h"
 #include "mshtmdid.h"
 #include "idispids.h"
 
@@ -3474,7 +3475,11 @@ static ULONG WINAPI HTMLDocumentObj_Release(IUnknown *iface)
             This->doc_node = NULL;
             doc_node->doc_obj = NULL;
 
-            set_window_uninitialized(This->window);
+            __TRY {
+                set_window_uninitialized(This->window);
+            } __EXCEPT_ALL {
+                WARN("Gecko crashed during set_window_uninitialized, ignoring.\n");
+            } __ENDTRY
             IHTMLDOMNode_Release(&doc_node->node.IHTMLDOMNode_iface);
         }
         if(This->window)
@@ -3506,8 +3511,13 @@ static ULONG WINAPI HTMLDocumentObj_Release(IUnknown *iface)
         remove_target_tasks(This->task_magic);
         ConnectionPointContainer_Destroy(&This->cp_container);
 
-        if(This->nscontainer)
-            detach_gecko_browser(This->nscontainer);
+        if(This->nscontainer) {
+            __TRY {
+                detach_gecko_browser(This->nscontainer);
+            } __EXCEPT_ALL {
+                WARN("Gecko crashed during detach_gecko_browser, ignoring.\n");
+            } __ENDTRY
+        }
         free(This);
     }
 
